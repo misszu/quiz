@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Quiz Grammar</title>
+    <style>
+        * {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: radial-gradient(circle at center, #ffafbd, #ffc3a0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Floating Animation */
+@keyframes floating {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* Quiz Container - Glassmorphism Effect */
+.quiz-container {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    padding: 25px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease-in-out;
+    animation: floating 3s infinite ease-in-out;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #ff3f66;
+    font-weight: 700;
+}
+
+/* Button Styling */
+.btn-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn {
+    background: linear-gradient(45deg, #ff3f66, #ff8c94);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background: linear-gradient(45deg, #ff1e4d, #ff6b6b);
+    transform: scale(1.05);
+}
+
+/* "CAN" Word Animation */
+.can-word {
+    position: absolute;
+    top: 20%; /* Increased more for better downward movement */
+    left: 50%;
+    transform: translate(-50%, -40%); /* Adjusted vertical translation */
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+}
+
+/* Lyrics Styling */
+.lyrics-container {
+    position: absolute;
+    top: calc(50% + 40px);
+    left: 50%;
+    transform: translate(-50%, 0);
+    text-align: center;
+}
+
+.lyric-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: White;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid transparent;
+    margin-top: 5px;
+    transition: opacity 1s ease-in-out;
+}
+
+/* Celebration GIF */
+.celebration {
+    display: none;
+    text-align: center;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.celebration img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>English Grammar Quiz</h1>
+        <div id="question-container">
+            <h2 id="question">Loading...</h2>
+        </div>
+        <div id="answer-buttons" class="btn-grid"></div>
+    </div>
+
+    <div id="can-word" class="can-word">"CAN"</div>
+    <div id="lyrics-container" class="lyrics-container"></div>
+
+    <div class="celebration" id="celebration">
+        <img src="your-custom-gif.gif" alt="Celebration GIF">
+        <audio id="victory-song" src="your-song.mp3"></audio>
+    </div>
+
+    <script>
+    const questions = [
+        {
+            question: "What contraction is commonly used to indicate prohibition or impossibility?",
+            sentence: '"You ___ enter this area without permission"?',
+            answers: [
+                { text: "can", correct: false },
+                { text: "can't", correct: true },
+                { text: "couldn't", correct: false },
+                { text: "shouldn't", correct: false }
+            ]
+        },
+        {
+            question: "Which word correctly completes this sentence?",
+            sentence: '"She ___ finished her homework before going to bed."',
+            answers: [
+                { text: "has", correct: true },
+                { text: "have", correct: false },
+                { text: "having", correct: false },
+                { text: "had", correct: false }
+            ]
+        },
+        {
+            question: "What is the correct modal verb to express strong obligation?",
+            sentence: '"You ___ wear a seatbelt while driving."',
+            answers: [
+                { text: "must", correct: true },
+                { text: "can", correct: false },
+                { text: "should", correct: false },
+                { text: "may", correct: false }
+            ]
+        },
+        {
+            question: "Which sentence uses the correct form of 'their, there, or they’re'?",
+            sentence: '"___ going to visit ___ grandparents this weekend."',
+            answers: [
+                { text: "They’re, their", correct: true },
+                { text: "There, their", correct: false },
+                { text: "Their, they’re", correct: false },
+                { text: "They’re, there", correct: false }
+            ]
+        },
+        {
+            question: "What modal verb is used to express possibility or ability?",
+            sentence: '"With enough practice, anyone ___ improve their skills."',
+            answers: [
+                { text: "can", correct: true },
+                { text: "must", correct: false },
+                { text: "may", correct: false },
+                { text: "should", correct: false }
+            ]
+        }
+    ];
+
+    const questionElement = document.getElementById("question");
+    const answerButtons = document.getElementById("answer-buttons");
+    const quizContainer = document.querySelector(".quiz-container");
+    const canWord = document.getElementById("can-word");
+    const lyricsContainer = document.getElementById("lyrics-container");
+    const celebration = document.getElementById("celebration");
+    const victorySong = document.getElementById("victory-song");
+
+    let currentQuestionIndex = 0;
+
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        quizContainer.style.opacity = "1";
+        quizContainer.style.display = "block";
+        canWord.style.opacity = "0";
+        lyricsContainer.innerHTML = ""; // Clear previous lyrics
+        showQuestion();
+    }
+
+    function showQuestion() {
+        answerButtons.innerHTML = "";
+        let currentQuestion = questions[currentQuestionIndex];
+        questionElement.innerText = currentQuestion.question + "\n" + currentQuestion.sentence;
+
+        currentQuestion.answers.forEach(answer => {
+            const button = document.createElement("button");
+            button.innerText = answer.text;
+            button.classList.add("btn");
+            button.addEventListener("click", () => selectAnswer(answer.correct));
+            answerButtons.appendChild(button);
+        });
+    }
+
+    function selectAnswer(correct) {
+        if (correct) {
+            if (currentQuestionIndex === 4) {
+                showFinalSequence();
+            } else {
+                currentQuestionIndex++;
+                showQuestion();
+            }
+        } else {
+            restartQuiz(); // Restart if the wrong answer is selected
+        }
+    }
+
+    function restartQuiz() {
+        alert("Wrong answer! Restarting the quiz hyzz...");
+        startQuiz();
+    }
+
+    function showFinalSequence() {
+        quizContainer.style.opacity = "0";
+
+        setTimeout(() => {
+            quizContainer.style.display = "none";
+            canWord.style.opacity = "1";
+            canWord.style.top = "20%";
+            canWord.style.fontSize = "50px";
+
+            setTimeout(() => {
+                typeLyrics("we go back to the days our love was strong");
+                victorySong.play();
+
+                setTimeout(() => typeLyrics("you tell me how a perfect love goes wrong?"), 7970);
+                setTimeout(() => typeLyrics("somebody tell me how to get things back"), 16410);
+                setTimeout(() => typeLyrics("The way they used to be"), 21360);
+                setTimeout(() => typeLyrics("Oh God, give me a reason"), 25760);
+                setTimeout(() => typeLyrics("I’m down on bended knee"), 29970);
+            }, 1000);
+        }, 500);
+    }
+
+    function typeLyrics(line) {
+        const lyric = document.createElement("div");
+        lyric.classList.add("lyric-text");
+        lyric.innerText = line;
+        lyric.style.opacity = "1";
+        lyricsContainer.appendChild(lyric);
+    }
+
+    victorySong.addEventListener("play", () => {
+        celebration.style.display = "block";
+    });
+
+    startQuiz();
+</script>
+</body>
+</html>
